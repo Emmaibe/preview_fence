@@ -1,37 +1,47 @@
-import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
-import { useFonts } from 'expo-font';
-import { Stack } from 'expo-router';
-import * as SplashScreen from 'expo-splash-screen';
-import { useEffect } from 'react';
-import 'react-native-reanimated';
-
-import { useColorScheme } from '@/hooks/useColorScheme';
+import {SplashScreen, Stack} from "expo-router";
+import {useEffect} from "react";
+import {useFonts} from "expo-font";
+import ModalContextProvider from "@/contexts/ModalContext";
+import AuthProvider from "@/contexts/AuthContext";
+import UserContextProvider from "@/contexts/UserContext";
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
-  const colorScheme = useColorScheme();
-  const [loaded] = useFonts({
-    SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
-  });
 
-  useEffect(() => {
-    if (loaded) {
-      SplashScreen.hideAsync();
+    const [loaded] = useFonts({
+        // Inter font family
+        "inter": require("../assets/fonts/Inter_28pt-Regular.ttf"),
+        "inter-medium": require("../assets/fonts/Inter_24pt-Medium.ttf"),
+        "inter-semibold": require("../assets/fonts/Inter_28pt-SemiBold.ttf"),
+        "inter-bold": require("../assets/fonts/Inter_28pt-Bold.ttf"),
+        "inter-extrabold": require("../assets/fonts/Inter_28pt-ExtraBold.ttf"),
+    });
+
+    useEffect(() => {
+        if (loaded) {
+            SplashScreen.hideAsync();
+        }
+    }, [loaded]);
+
+    if (!loaded) {
+        return null;
     }
-  }, [loaded]);
-
-  if (!loaded) {
-    return null;
-  }
 
   return (
-    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <Stack>
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="+not-found" />
-      </Stack>
-    </ThemeProvider>
+      <AuthProvider>
+          <UserContextProvider>
+              <ModalContextProvider>
+                  <Stack
+                      screenOptions={{
+                          headerShown: false,
+                      }}
+                  >
+                      <Stack.Screen name="index" />
+                  </Stack>
+              </ModalContextProvider>
+          </UserContextProvider>
+      </AuthProvider>
   );
 }
