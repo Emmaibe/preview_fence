@@ -1,7 +1,7 @@
 import {ScrollView, View, Text, Image, TextInput, TouchableOpacity, FlatList} from "react-native";
 import {SafeAreaView} from "react-native-safe-area-context";
-import {useEffect, useState} from "react";
-import {Entypo} from "@expo/vector-icons";
+import React, {useEffect, useState} from "react";
+import {Entypo, Ionicons} from "@expo/vector-icons";
 import {router} from "expo-router";
 import Search from "@/components/Search";
 import {useFenceDataContext} from "@/contexts/FenceDataContext";
@@ -28,54 +28,48 @@ const Index = () => {
 
     return (
         <SafeAreaView className="p-4 dark:border-gray-400 flex-1">
-            {/*<View className="flex-1">*/}
-                <View className="flex-row justify-between items-center px-2 mb-8">
-                    <Text className="font-interextrabold text-[20px]">ThePreviewfence</Text>
-                    <TouchableOpacity onPress={() => router.push("/settings")}>
-                        <Image source={require("../../assets/icons/setting.png")} />
+            <View className="flex-row justify-between items-center px-2 mb-8">
+                <Text className="font-interextrabold text-[20px]">ThePreviewfence</Text>
+                <TouchableOpacity onPress={() => router.push("/settings")}>
+                    <Image source={require("../../assets/icons/setting.png")} />
+                </TouchableOpacity>
+            </View>
+
+            <Search
+                placeholder="Find dimensiona, Materials, etc"
+                search={search}
+                setSearch={setSearch}
+            />
+
+            <FlatList
+                data={cat}
+                horizontal={true}
+                showsHorizontalScrollIndicator={false}
+                className="mt-4"
+                renderItem={({ item, index }) => (
+                    <Category key={index} category={item} isSelected={item.name === selectedCategory} setCategory={setCategory} />
+                )}
+            />
+
+            <FlatList
+                data={!fenceLoading ? fenceData : []}
+                className="my-4 rounded-[12px]"
+                showsVerticalScrollIndicator={false}
+                renderItem={({ item, index }) => (
+                    <TouchableOpacity onPress={() => handleSelectFence(item)} key={index} className="my-2 w-full">
+                        <Image source={{ uri: item.imageUrls[0]}} className="w-full h-[200px] rounded-[12px]"/>
+                        <Text className="mt-1 text-base font-intersb"><Text>Name: </Text> {item.name}</Text>
+                        <Text className="text-sm font-intermedium"><Text>Description: </Text> {item.description}</Text>
                     </TouchableOpacity>
-                </View>
+                )}
+            />
 
-                <Search
-                    placeholder="Find dimensiona, Materials, etc"
-                    search={search}
-                    setSearch={setSearch}
-                />
-
-                <FlatList
-                    data={cat}
-                    horizontal={true}
-                    showsHorizontalScrollIndicator={false}
-                    className="mt-4"
-                    renderItem={({ item, index }) => (
-                        <Category key={index} category={item} isSelected={item.name === selectedCategory} setCategory={setCategory} />
-                    )}
-                />
-
-                {/*<TouchableOpacity*/}
-                {/*    onPress={() => router.push("/home/fenceUnit")}*/}
-                {/*    className="p-4 rounded-lg bg-primary-green mt-10"*/}
-                {/*>*/}
-                {/*    <Text className="text-primary-text text-center font-intersb">Fence Unit</Text>*/}
-                {/*</TouchableOpacity>*/}
-                {/*<TouchableOpacity*/}
-                {/*    onPress={() => router.push("/home/savedPreviews")}*/}
-                {/*    className="p-4 rounded-lg bg-primary-green mt-10"*/}
-                {/*>*/}
-                {/*    <Text className="text-primary-text text-center font-intersb">Saved Previews</Text>*/}
-                {/*</TouchableOpacity>*/}
-                <FlatList
-                    data={!fenceLoading ? fenceData : []}
-                    className="my-4 rounded-[12px]"
-                    showsVerticalScrollIndicator={false}
-                    renderItem={({ item, index }) => (
-                        <TouchableOpacity onPress={() => handleSelectFence(item)} key={index} className="my-2 w-full">
-                            <Image source={{ uri: item.imageUrls[0]}} className="w-full h-[200px] rounded-[12px]"/>
-                            <Text className="mt-1 text-base font-intersb"><Text>Name: </Text> {item.name}</Text>
-                            <Text className="text-sm font-intermedium"><Text>Description: </Text> {item.description}</Text>
-                        </TouchableOpacity>
-                    )}
-                />
+            <TouchableOpacity
+                onPress={() => router.push("/home/savedPreviews")}
+                className="absolute bottom-10 right-5 w-[64] h-[64] bg-neutral-800 border-2 border-white rounded-full flex justify-center items-center mt-6"
+            >
+                <Ionicons name="folder-open" size={20} color="white" />
+            </TouchableOpacity>
         </SafeAreaView>
     )
 }

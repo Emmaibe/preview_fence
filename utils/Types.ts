@@ -77,3 +77,43 @@ export interface FenceData {
 }
 
 declare type FenceDataArray = FenceData[];
+
+// Minimal interface for the pins
+export interface Pin {
+    [key: string]: any;
+}
+
+export interface PreviewPayload {
+    pins: Pin[];
+    fenceId?: string;
+    userId: string;
+    gateIndex?: number;
+    fenceIndex?: number;
+    description: string;
+    unitWidths?: number[];
+}
+
+const data: PreviewPayload = {
+    pins: [
+        [0,1,3],
+        [0,1,3],
+        [0,1,3],
+        [0,1,3],
+        [0,1,3],
+    ],
+    description: "MR collins house",
+    userId: "kjbcbs",
+}
+
+export interface SavedPreview extends PreviewPayload {
+    id: string;
+    createdAt: string;
+    updatedAt: string;
+}
+
+export type SavedPreviewArray = SavedPreview[];
+
+export interface SavedFence extends FenceData {
+    unitPath: string;
+    gatePath: string;
+}

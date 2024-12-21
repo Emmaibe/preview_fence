@@ -11,20 +11,47 @@ import {
     TouchableOpacity, TouchableWithoutFeedback,
     View
 } from "react-native";
-import {useState} from "react";
+import {useEffect, useRef, useState} from "react";
 import {LinearGradient} from "expo-linear-gradient";
-import { useRouter } from "expo-router";
-import {useModalAnimation} from "@/hooks/useModalAnimation";
-import {useModalContext} from "@/contexts/ModalContext";
+import {useRouter} from "expo-router";
 import OTPModal from "@/components/OTPModal";
 import {useAuthContext} from "@/contexts/AuthContext";
 import useFormValidation from "@/hooks/useFormValidation";
 import {emailRegex, fullNameRegex, phoneRegex} from "@/utils/Constants";
 
 export default function Index() {
-    const { isVisible, translateYAnim } = useModalAnimation();
-    const { setIsModalOpen } = useModalContext();
-    const { onRegister } = useAuthContext();
+    const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+
+    const [isVisible, setIsVisible] = useState(false);
+    const translateYAnim = useRef(new Animated.Value(1000)).current;
+
+    const slideIn = () => {
+        setIsVisible(true);
+
+        Animated.timing(translateYAnim, {
+            toValue: 0,
+            duration: 300,
+            useNativeDriver: true,
+        }).start();
+    };
+
+    const slideOut = () => {
+        Animated.timing(translateYAnim, {
+            toValue: 1000,
+            duration: 300,
+            useNativeDriver: true,
+        }).start(() => setIsVisible(false));
+    };
+
+    useEffect(() => {
+        if (isModalOpen) {
+            slideIn();
+        } else {
+            slideOut();
+        }
+    }, [isModalOpen]);
+
+    const {onRegister} = useAuthContext();
 
     const [loading, setLoading] = useState(false);
 
@@ -73,7 +100,7 @@ export default function Index() {
     return (
         <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
             <KeyboardAvoidingView
-                style={{ flex: 1 }}
+                style={{flex: 1}}
                 behavior={Platform.OS === "ios" ? "padding" : "height"}
             >
                 <ImageBackground
@@ -88,7 +115,7 @@ export default function Index() {
 
                     <Animated.View
                         style={{
-                            transform: [{ translateY: translateYAnim }],
+                            transform: [{translateY: translateYAnim}],
                             position: "absolute",
                             top: "30%",
                             left: 0,
@@ -97,7 +124,7 @@ export default function Index() {
                             zIndex: 100,
                         }}
                     >
-                        <OTPModal type={"register"} email={formState.email} />
+                        <OTPModal type={"register"} email={formState.email}/>
                     </Animated.View>
 
                     <StatusBar
@@ -125,14 +152,15 @@ export default function Index() {
                                             borderBottomRightRadius: 16,
                                             borderBottomLeftRadius: 16,
                                         }}
-                                        start={{ x: 0.5, y: 0 }}
-                                        end={{ x: 0.5, y: 1.05 }}
+                                        start={{x: 0.5, y: 0}}
+                                        end={{x: 0.5, y: 1.05}}
                                     />
                                 </View>
 
                                 <View className="px-[10px] py-[20px] space-y-3">
                                     <View className="space-y-3">
-                                        <Text className="text-[14px] font-intermedium text-primary-text">Email Address</Text>
+                                        <Text className="text-[14px] font-intermedium text-primary-text">Email
+                                            Address</Text>
 
                                         <Text className="text-[14px] font-intermedium text-primary-gray-light">
                                             Enter your email address and five (5) digit OTP will
@@ -142,9 +170,9 @@ export default function Index() {
                                         <TextInput
                                             className={`font-intermedium text-primary-text p-5 rounded-[12px] w-full border 
                                                 ${!validityState.email && formState.email !== "" ?
-                                                    "border-primary-danger" :
-                                                    "border-primary-gray-light"
-                                                }
+                                                "border-primary-danger" :
+                                                "border-primary-gray-light"
+                                            }
                                             `}
                                             value={formState.email}
                                             onChangeText={(value) => handleChange("email", value)}
@@ -155,14 +183,15 @@ export default function Index() {
                                     </View>
 
                                     <View className="space-y-3">
-                                        <Text className="text-[14px] font-intermedium text-primary-text">Full name</Text>
+                                        <Text className="text-[14px] font-intermedium text-primary-text">Full
+                                            name</Text>
 
                                         <TextInput
                                             className={`font-intermedium text-primary-text p-5 rounded-[12px] w-full border 
                                                 ${!validityState.fullName && formState.fullName !== "" ?
-                                                    "border-primary-danger" :
-                                                    "border-primary-gray-light"
-                                                }
+                                                "border-primary-danger" :
+                                                "border-primary-gray-light"
+                                            }
                                             `}
                                             value={formState.fullName}
                                             onChangeText={(value) => handleChange("fullName", value)}
@@ -172,14 +201,15 @@ export default function Index() {
                                     </View>
 
                                     <View className="space-y-3">
-                                        <Text className="text-[14px] font-intermedium text-primary-text">Company Name</Text>
+                                        <Text className="text-[14px] font-intermedium text-primary-text">Company
+                                            Name</Text>
 
                                         <TextInput
                                             className={`font-intermedium text-primary-text p-5 rounded-[12px] w-full border 
                                                 ${!validityState.companyName && formState.companyName !== "" ?
-                                                    "border-primary-danger" :
-                                                    "border-primary-gray-light"
-                                                }
+                                                "border-primary-danger" :
+                                                "border-primary-gray-light"
+                                            }
                                             `}
                                             value={formState.companyName}
                                             onChangeText={(value) => handleChange("companyName", value)}
@@ -189,14 +219,15 @@ export default function Index() {
                                     </View>
 
                                     <View className="space-y-3">
-                                        <Text className="text-[14px] font-intermedium text-primary-text">Phone number</Text>
+                                        <Text className="text-[14px] font-intermedium text-primary-text">Phone
+                                            number</Text>
 
                                         <TextInput
                                             className={`font-intermedium text-primary-text p-5 rounded-[12px] w-full border 
                                                 ${!validityState.phoneNumber && formState.phoneNumber !== "" ?
-                                                    "border-primary-danger" :
-                                                    "border-primary-gray-light"
-                                                }
+                                                "border-primary-danger" :
+                                                "border-primary-gray-light"
+                                            }
                                             `}
                                             value={formState.phoneNumber}
                                             onChangeText={(value) => handleChange("phoneNumber", value)}
@@ -211,12 +242,14 @@ export default function Index() {
                                         disabled={loading || !isFormValid}
                                         className="border border-primary-gray-light p-[1px] rounded-[17px] relative top-5"
                                     >
-                                        <View className="bg-neutral-800 h-[50px] rounded-[16px] flex-row items-center justify-center">
+                                        <View
+                                            className="bg-neutral-800 h-[50px] rounded-[16px] flex-row items-center justify-center">
                                             {
                                                 loading ? (
                                                     <ActivityIndicator color={"#F6F8FA"}/>
                                                 ) : (
-                                                    <Text className="text-white text-center text-[16px] font-intermedium">
+                                                    <Text
+                                                        className="text-white text-center text-[16px] font-intermedium">
                                                         Create account
                                                     </Text>
                                                 )
@@ -225,20 +258,20 @@ export default function Index() {
                                     </TouchableOpacity>
 
                                     <View className="flex flex-row justify-between top-4">
-                                        <Text className="text-[14px] font-intermedium text-primary-text">Already have an account?</Text>
+                                        <Text className="text-[14px] font-intermedium text-primary-text">Already have an
+                                            account?</Text>
 
                                         <TouchableOpacity onPress={() => router.push("/auth/login")}>
-                                            <Text className="text-[14px] font-intermedium text-primary-gray-light">Login</Text>
+                                            <Text
+                                                className="text-[14px] font-intermedium text-primary-gray-light">Login</Text>
                                         </TouchableOpacity>
                                     </View>
                                 </View>
                             </View>
                         </View>
                     </ScrollView>
-
                 </ImageBackground>
             </KeyboardAvoidingView>
         </TouchableWithoutFeedback>
     );
 }
-

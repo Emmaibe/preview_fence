@@ -1,9 +1,8 @@
 import { useEffect, useRef, useState } from "react";
 import { Animated } from "react-native";
-import { useModalContext } from "@/contexts/ModalContext";
 
 export const useModalAnimation = () => {
-    const { isModalOpen } = useModalContext();
+    const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
 
     const [isVisible, setIsVisible] = useState(false);
     const translateYAnim = useRef(new Animated.Value(1000)).current;
@@ -34,5 +33,5 @@ export const useModalAnimation = () => {
         }
     }, [isModalOpen]);
 
-    return { isVisible, translateYAnim };
+    return { isVisible, isModalOpen, translateYAnim, setIsVisible, setIsModalOpen };
 };

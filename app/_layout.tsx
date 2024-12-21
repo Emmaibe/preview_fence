@@ -5,6 +5,7 @@ import ModalContextProvider from "@/contexts/ModalContext";
 import AuthProvider from "@/contexts/AuthContext";
 import UserContextProvider from "@/contexts/UserContext";
 import FenceDataContextProvider from "@/contexts/FenceDataContext";
+import PreviewContextProvider from "@/contexts/PreviewContext";
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
@@ -35,13 +36,15 @@ export default function RootLayout() {
           <UserContextProvider>
               <ModalContextProvider>
                   <FenceDataContextProvider>
-                      <Stack
-                          screenOptions={{
-                              headerShown: false,
-                          }}
-                      >
-                          <Stack.Screen name="index" />
-                      </Stack>
+                      <PreviewContextProvider>
+                          <Stack
+                              screenOptions={{
+                                  headerShown: false,
+                              }}
+                          >
+                              <Stack.Screen name="index" />
+                          </Stack>
+                      </PreviewContextProvider>
                   </FenceDataContextProvider>
               </ModalContextProvider>
           </UserContextProvider>

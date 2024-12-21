@@ -1,68 +1,138 @@
-import { Feather } from "@expo/vector-icons";
+import {Feather, FontAwesome6} from "@expo/vector-icons";
 import { router } from "expo-router";
-import { useState } from "react";
+import {useEffect, useState} from "react";
 import { TouchableOpacity, View, Image, Text } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import {FenceData} from "@/utils/Types";
-import {inchesToFeet} from "@/utils/helperfunctions/HelperFunctions";
+import {downloadFile, inchesToFeet} from "@/utils/helperfunctions/HelperFunctions";
+import * as Progress from 'react-native-progress';
+import {getObjectFromAsyncStorage, saveObjectToAsyncStorage} from "@/api/AsynStorage";
 
 const FenceUnitDetail = ({ fence }: { fence: FenceData | null }) => {
-    const [images, setImages] = useState([
-        require("../assets/images/1.png"),
-        // require("../assets/images/2.png"),
-        // require("../assets/images/3.png"),
-        // require("../assets/images/4.png"),
-    ]);
+    const [uris, setUris] = useState<string[]>([]);
+    const [progress, setProgress] = useState<number>(0);
+    const [isDownloading, setIsDownloading] = useState(false);
+    const [isDownloadFailed, setIsDownloadFailed] = useState(false);
+
+    useEffect(() => {
+        console.log(fence?.name.replaceAll(" ", "_"));
+
+        const getFenceFromAsyncstorage = async () => {
+            const fenceData = await getObjectFromAsyncStorage(fence?.name.replaceAll(" ", "_")+"_pf_fence" ?? "");
+
+            if (fenceData) {
+                setUris([fenceData.unitPath, fenceData.gatePath]);
+            }
+            console.log(fenceData);
+        }
+
+        getFenceFromAsyncstorage()
+            .catch(err => console.error(err));
+    }, []);
+
+    const setDownloadProgress = (_progress: number, error: any) => {
+        setProgress((prevState) => {
+            if(progress >= 100){
+                return 100 + _progress;
+            }else {
+                return _progress
+            }
+        })
+    }
+
+    const download = async () => {
+        console.log("Downloading...");
+        setIsDownloading(true);
+        setIsDownloadFailed(false);
+
+        try {
+            if(!fence) return;
+            const unitUri = await downloadFile(fence, false, setDownloadProgress);
+            if(!unitUri) {
+                console.error("Failed to download unit");
+                setIsDownloadFailed(true)
+                return;
+            }
+
+            const gateUri = await downloadFile(fence, true, setDownloadProgress);
+
+            if(!gateUri){
+                // delete unit file
+                console.error("Failed to download gate");
+                setIsDownloadFailed(true)
+                return;
+            }
+
+            console.log(gateUri, unitUri)
+            setUris([unitUri, gateUri]);
+
+            const toBeStored = {
+                ...fence,
+                gatePath: gateUri,
+                unitPath: unitUri
+            }
+
+            await saveObjectToAsyncStorage(fence.name.replaceAll(" ", "_")+"_pf_fence", toBeStored)
+        } catch {
+            setIsDownloadFailed(true);
+        } finally {
+            setIsDownloading(false);
+        }
+    }
+
     return (
         <SafeAreaView className="p-4 flex-1 justify-between">
-            <View className="flex flex-row items-center justify-between mb-8">
-                <TouchableOpacity onPress={() => router.back()} className="flex flex-row items-center space-x-2">
-                    <Image source={require("../assets/icons/back.png")} className="w-[16px] h-[12px]" />
-                    <Text className="font-intersb text-[20px]">Single wooden fence unit</Text>
-                </TouchableOpacity>
+            <View>
+                <View className="flex flex-row items-center justify-between mb-8">
+                    <TouchableOpacity onPress={() => router.back()} className="flex flex-row items-center space-x-2">
+                        <Image source={require("../assets/icons/back.png")} className="w-[16px] h-[12px]" />
+                        <Text className="font-intersb text-[20px]">Single wooden fence unit</Text>
+                    </TouchableOpacity>
 
-                <TouchableOpacity onPress={() => console.log("deleted")}>
-                    <Feather name="download" size={24} color="black" />
-                </TouchableOpacity>
-            </View>
-
-            <View className="space-y-6">
-                <View className="flex-row items-start justify-between">
-                    <View>
-                        <Text className="text-neutral-800 text-base font-interbold">Fence gate</Text>
-                        <UnitDetail title="Width" value={fence?.gateWidth ?? 0} />
-                        <UnitDetail title="Height" value={fence?.gateHeight ?? 0} />
-                    </View>
-                    <View>
-                        <Text className="text-neutral-800 text-base font-interbold">Fence section</Text>
-                        <UnitDetail title="Unit Height" value={fence?.unitHeight ?? 0} />
-                        <UnitDetail title="Min Unit Section Width" value={fence?.minUnitWidth ?? 0} />
-                        <UnitDetail title="Max Unit Section Width" value={fence?.maxUnitWidth ?? 0} />
-                    </View>
+                    {
+                        isDownloading && uris.length < 2 ?
+                            <View>
+                                <Progress.Circle
+                                    progress={progress / 100}
+                                    size={25}
+                                    indeterminate={progress < 5}
+                                    showsText={true}
+                                    strokeCap={'round'}
+                                    formatText={() => `${Math.floor(progress)}%`}
+                                    textStyle={{ fontSize: 7, color: "#000000", fontWeight: "bold" }}
+                                />
+                            </View> : uris.length === 2 ?
+                                <View>
+                                    <FontAwesome6 name="circle-check" size={24} color="green" />
+                                </View> :
+                                <TouchableOpacity onPress={() => download()}>
+                                    <Feather name="download" size={24} color="black" />
+                                </TouchableOpacity>
+                    }
                 </View>
 
-                <View className="rounded-[17px] bg-white">
-                    <Text className="font-interbold text-[20px] my-5 px-4">Gallery</Text>
-                    <View className="flex-row">
-                        {fence?.imageUrls.length === 1 && <View className="w-full">
-                            <Image source={{ uri: fence?.imageUrls[0] }} className="w-full h-[300px] rounded-[12px]"/>
-                        </View>}
-                        {images.length > 1 && <>
-                            <View className="flex-1">
-                                {images.map((image, index) => index % 2 == 0 || index == 0 ? (
-                                    <View key={index} className="w-full">
-                                        <Image source={image} className="w-full"/>
-                                    </View>
-                                ) : null)}
-                            </View>
-                            <View className="flex-col flex-1">
-                                {images.map((image, index) => index % 2 != 0 && index != 0 ? (
-                                    <View key={index} className="w-full">
-                                        <Image source={image} className="w-full h-[200px]"/>
-                                    </View>
-                                ) : null)}
-                            </View>
-                        </>}
+                <View className="space-y-6 mt-5">
+                    <View className="flex-row items-start justify-between">
+                        <View>
+                            <Text className="text-neutral-800 text-base font-interbold">Fence gate</Text>
+                            <UnitDetail title="Width" value={fence?.gateWidth ?? 0} />
+                            <UnitDetail title="Height" value={fence?.gateHeight ?? 0} />
+                        </View>
+                        <View>
+                            <Text className="text-neutral-800 text-base font-interbold">Fence section</Text>
+                            <UnitDetail title="Unit Height" value={fence?.unitHeight ?? 0} />
+                            <UnitDetail title="Min Unit Section Width" value={fence?.minUnitWidth ?? 0} />
+                            <UnitDetail title="Max Unit Section Width" value={fence?.maxUnitWidth ?? 0} />
+                        </View>
+                    </View>
+
+                    <View className="rounded-[17px] bg-white">
+                        <Text className="font-interbold text-[20px] my-5 px-4">Gallery</Text>
+                        <View className="flex-row">
+                            {fence?.imageUrls && <View className="w-full">
+                                <Image source={{ uri: fence?.imageUrls[0] }} className="w-full h-[300px] rounded-[12px]"/>
+                            </View>}
+                        </View>
                     </View>
                 </View>
             </View>

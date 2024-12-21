@@ -5,13 +5,7 @@ export const saveToSecureStorage = async (key: any, value: any) => {
 }
 
 export const getFromSecureStorage = async (key: any) => {
-    let result = await SecureStore.getItemAsync(key);
-
-    if (result) {
-        return result;
-    } else {
-        return null;
-    }
+    return await SecureStore.getItemAsync(key);
 }
 
 export const deleteFromSecureStorage = async (key: any) => {

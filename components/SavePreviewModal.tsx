@@ -1,4 +1,4 @@
-import React, {useEffect, useRef} from "react";
+import React, {useEffect, useRef, useState} from "react";
 import {
     View,
     Image,
@@ -9,16 +9,56 @@ import {
     TouchableWithoutFeedback,
     TextInput,
     KeyboardAvoidingView,
-    Platform
+    Platform, ActivityIndicator
 } from "react-native";
 import {FontAwesome6} from "@expo/vector-icons";
+import {PreviewPayload} from "@/utils/Types";
+import {axiosInstance} from "@/api/AxiosInstance";
+import userContext, {useUserContext} from "@/contexts/UserContext";
 
 type SavedPreviewModalProps = {
     setModal: React.Dispatch<React.SetStateAction<boolean>>;
+    handleOpenHandleSavePreview: () => void;
+    handleCloseHandleSavePreview: () => void;
 };
 
-const SavedPreviewModal: React.FC<SavedPreviewModalProps> = ({setModal}) => {
+const SavedPreviewModal: React.FC<SavedPreviewModalProps> = ({setModal, handleOpenHandleSavePreview, handleCloseHandleSavePreview}) => {
     const [description, setDescription] = React.useState("");
+    const { user } = useUserContext();
+
+    const [loading, setLoading] = useState(false);
+
+    const data: PreviewPayload = {
+        pins: [
+            [0,1,3],
+            [0,1,3],
+            [0,1,3],
+            [0,1,3],
+            [0,1,3],
+        ],
+        description: "MR collins house",
+        userId: user.id || "123456789",
+    }
+
+    const handleSavePreview = async () => {
+        if (description.length < 1) return;
+
+        setLoading(true);
+
+        try {
+            const response = await axiosInstance.post("assets/preview", data);
+
+            if (response) {
+                console.log("Preview saved successfully:", response.data);
+                handleOpenHandleSavePreview();
+            }
+
+        } catch (error) {
+            console.error("Error saving preview:", error);
+        } finally {
+            setLoading(false);
+        }
+    }
 
     const slide = useRef(new Animated.Value(750)).current;
 
@@ -97,11 +137,23 @@ const SavedPreviewModal: React.FC<SavedPreviewModalProps> = ({setModal}) => {
                         />
 
                         <TouchableOpacity
-                            className="border border-primary-gray-light p-[1px] rounded-[17px] relative top-36"
+                            onPress={() => {
+                                handleSavePreview()
+                            }}
+                            disabled={loading}
+                            className="border border-primary-gray-light p-[1px] rounded-[17px] relative top-5"
                         >
-                            <View className="bg-neutral-800 p-[14px] rounded-[16px]">
-                                <Text className="text-white text-center text-[16px] font-intermedium">Save
-                                    preview</Text>
+                            <View
+                                className="bg-neutral-800 h-[50px] rounded-[16px] flex-row items-center justify-center">
+                                {
+                                    loading ? (
+                                        <ActivityIndicator color={"#F6F8FA"}/>
+                                    ) : (
+                                        <Text className="text-white text-center text-[16px] font-intermedium">
+                                            Save preview
+                                        </Text>
+                                    )
+                                }
                             </View>
                         </TouchableOpacity>
                     </View>

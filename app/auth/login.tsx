@@ -10,52 +10,79 @@ import {
     TouchableOpacity, TouchableWithoutFeedback,
     View
 } from "react-native";
-import {useState} from "react";
+import {useEffect, useRef, useState} from "react";
 import {LinearGradient} from "expo-linear-gradient";
-import {useModalAnimation} from "@/hooks/useModalAnimation";
-import {useModalContext} from "@/contexts/ModalContext";
-import { useRouter } from "expo-router";
+import {useRouter} from "expo-router";
 import {useAuthContext} from "@/contexts/AuthContext";
 import {emailRegex} from "@/utils/Constants";
 import OTPModal from "@/components/OTPModal";
 
 export default function Index() {
-  const { isVisible, translateYAnim } = useModalAnimation();
-  const { setIsModalOpen } = useModalContext();
-  const { onLogin } = useAuthContext();
+    const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
 
-  const router = useRouter();
+    const [isVisible, setIsVisible] = useState(false);
+    const translateYAnim = useRef(new Animated.Value(1000)).current;
 
-  const [loading, setLoading] = useState(false);
-  const [formValidated, setFormValidated] = useState<boolean | null>(null);
+    const slideIn = () => {
+        setIsVisible(true);
 
-  const [email, setEmail] = useState("");
+        Animated.timing(translateYAnim, {
+            toValue: 0,
+            duration: 300,
+            useNativeDriver: true,
+        }).start();
+    };
+
+    const slideOut = () => {
+        Animated.timing(translateYAnim, {
+            toValue: 1000,
+            duration: 300,
+            useNativeDriver: true,
+        }).start(() => setIsVisible(false));
+    };
+
+    useEffect(() => {
+        if (isModalOpen) {
+            slideIn();
+        } else {
+            slideOut();
+        }
+    }, [isModalOpen]);
+
+    const {onLogin} = useAuthContext();
+
+    const router = useRouter();
+
+    const [loading, setLoading] = useState(false);
+    const [formValidated, setFormValidated] = useState<boolean | null>(null);
+
+    const [email, setEmail] = useState("");
 
     const handleTextChange = (value: string) => {
         setEmail(value);
         setFormValidated(emailRegex.test(value));
     };
 
-  const handleLogin = async () => {
-      setLoading(true);
+    const handleLogin = async () => {
+        setLoading(true);
 
-      if (onLogin) {
-          const result = await onLogin(email);
+        if (onLogin) {
+            const result = await onLogin(email);
 
-          if (result?.error) {
-              alert("An error occurred, please try again");
-          } else {
-              setIsModalOpen(true);
-          }
+            if (result?.error) {
+                alert("An error occurred, please try again");
+            } else {
+                setIsModalOpen(true);
+            }
 
-          setLoading(false);
-      }
-  }
+            setLoading(false);
+        }
+    }
 
     return (
         <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
             <KeyboardAvoidingView
-                style={{ flex: 1 }}
+                style={{flex: 1}}
                 behavior={Platform.OS === "ios" ? "padding" : "height"}
             >
                 <ImageBackground
@@ -71,7 +98,7 @@ export default function Index() {
 
                     <Animated.View
                         style={{
-                            transform: [{ translateY: translateYAnim }],
+                            transform: [{translateY: translateYAnim}],
                             position: "absolute",
                             top: "30%",
                             left: 0,
@@ -80,7 +107,7 @@ export default function Index() {
                             zIndex: 100,
                         }}
                     >
-                        <OTPModal type={"login"} email={email} />
+                        <OTPModal type={"login"} email={email}/>
                     </Animated.View>
 
                     <StatusBar
@@ -107,8 +134,8 @@ export default function Index() {
                                         borderBottomRightRadius: 16,
                                         borderBottomLeftRadius: 16,
                                     }}
-                                    start={{ x: 0.5, y: 0 }}
-                                    end={{ x: 0.5, y: 1.05 }}
+                                    start={{x: 0.5, y: 0}}
+                                    end={{x: 0.5, y: 1.05}}
                                 />
                             </View>
 
@@ -137,24 +164,29 @@ export default function Index() {
 
                                 <TextInput
                                     className={`font-intermedium text-primary-text p-5 rounded-[12px] w-full border 
-                                        ${!formValidated && formValidated !== null ? 
-                                            "border-primary-danger" :
-                                            "border-primary-gray-light"
-                                        }
+                                        ${!formValidated && formValidated !== null ?
+                                        "border-primary-danger" :
+                                        "border-primary-gray-light"
+                                    }
                                     `}
                                     value={email}
                                     onChangeText={(value) => handleTextChange(value)}
                                     placeholder="Enter email address"
                                     placeholderTextColor={"#CECFCF"}
+                                    autoComplete="email"
+                                    textContentType={"emailAddress"}
                                     keyboardType={"email-address"}
                                 />
 
                                 <TouchableOpacity
-                                    onPress={() => handleLogin()}
+                                    onPress={() => {
+                                        handleLogin()
+                                    }}
                                     disabled={loading || !formValidated}
                                     className="border border-primary-gray-light p-[1px] rounded-[17px] relative top-5"
                                 >
-                                    <View className="bg-neutral-800 h-[50px] rounded-[16px] flex-row items-center justify-center">
+                                    <View
+                                        className="bg-neutral-800 h-[50px] rounded-[16px] flex-row items-center justify-center">
                                         {
                                             loading ? (
                                                 <ActivityIndicator color={"#F6F8FA"}/>
@@ -188,4 +220,3 @@ export default function Index() {
         </TouchableWithoutFeedback>
     );
 }
-

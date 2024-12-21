@@ -157,7 +157,7 @@ export default function OTPModal({ type, email }: OTPModalProps) {
 
                 <View className="bg-neutral-300 w-full rounded-[25px] flex-1 p-3 justify-between">
                     <Text className="font-intermedium text-[16px] text-center text-primary-gray-light">
-                        Enter the five (5) digit OTP that has been sent to fran***@xyz.com to complete log in
+                        Enter the five (5) digit OTP that has been sent to {email} to complete log in
                     </Text>
 
                     <View className="flex flex-row justify-between">

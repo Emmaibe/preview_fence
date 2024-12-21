@@ -1,13 +1,16 @@
 import React, { useEffect, useRef } from "react";
-import { View, Image, Text, Animated, TouchableOpacity, ScrollView } from "react-native";
+import {View, Image, Text, Animated, TouchableOpacity, ScrollView, FlatList} from "react-native";
 import { FontAwesome6 } from "@expo/vector-icons";
 import Search from "@/components/Search";
+import {usePreviewContext} from "@/contexts/PreviewContext";
 
 type MenuModalProps = {
     setModal: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
 const Modal: React.FC<MenuModalProps> = ({ setModal }) => {
+    const { savedFences, setSelectedFence, fetchSavedFences } = usePreviewContext();
+
     const [search, setSearch] = React.useState("");
 
     const slide = useRef(new Animated.Value(750)).current;
@@ -34,6 +37,10 @@ const Modal: React.FC<MenuModalProps> = ({ setModal }) => {
             slideOut();
         };
         // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
+
+    useEffect(() => {
+        fetchSavedFences();
     }, []);
 
     const closeMenu = () => {
@@ -68,9 +75,18 @@ const Modal: React.FC<MenuModalProps> = ({ setModal }) => {
                     />
                 </View>
 
-                <ScrollView>
-
-                </ScrollView>
+                <FlatList
+                    data={savedFences}
+                    className="my-4 rounded-[12px]"
+                    showsVerticalScrollIndicator={false}
+                    renderItem={({ item, index }) => (
+                        <TouchableOpacity onPress={() => setSelectedFence(item)} key={item.id} className="my-2 w-full">
+                            <Image source={{ uri: item.imageUrls[0]}} className="w-full h-[160px] rounded-[12px]"/>
+                            <Text className="mt-1 text-base font-intersb"><Text>Name: </Text> {item.name}</Text>
+                            <Text className="text-sm font-intermedium"><Text>Description: </Text> {item.description}</Text>
+                        </TouchableOpacity>
+                    )}
+                />
             </View>
         </View>
     );
