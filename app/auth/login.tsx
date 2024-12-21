@@ -13,7 +13,6 @@ import {
 import {useState} from "react";
 import {LinearGradient} from "expo-linear-gradient";
 import {useModalAnimation} from "@/hooks/useModalAnimation";
-import {BlurView} from "expo-blur";
 import {useModalContext} from "@/contexts/ModalContext";
 import { useRouter } from "expo-router";
 import {useAuthContext} from "@/contexts/AuthContext";
@@ -22,7 +21,7 @@ import OTPModal from "@/components/OTPModal";
 
 export default function Index() {
   const { isVisible, translateYAnim } = useModalAnimation();
-  const { setModal } = useModalContext();
+  const { setIsModalOpen } = useModalContext();
   const { onLogin } = useAuthContext();
 
   const router = useRouter();
@@ -46,7 +45,7 @@ export default function Index() {
           if (result?.error) {
               alert("An error occurred, please try again");
           } else {
-              setModal(true);
+              setIsModalOpen(true);
           }
 
           setLoading(false);

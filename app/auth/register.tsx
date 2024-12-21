@@ -16,7 +16,6 @@ import {LinearGradient} from "expo-linear-gradient";
 import { useRouter } from "expo-router";
 import {useModalAnimation} from "@/hooks/useModalAnimation";
 import {useModalContext} from "@/contexts/ModalContext";
-import {BlurView} from "expo-blur";
 import OTPModal from "@/components/OTPModal";
 import {useAuthContext} from "@/contexts/AuthContext";
 import useFormValidation from "@/hooks/useFormValidation";
@@ -24,7 +23,7 @@ import {emailRegex, fullNameRegex, phoneRegex} from "@/utils/Constants";
 
 export default function Index() {
     const { isVisible, translateYAnim } = useModalAnimation();
-    const { setModal } = useModalContext();
+    const { setIsModalOpen } = useModalContext();
     const { onRegister } = useAuthContext();
 
     const [loading, setLoading] = useState(false);
@@ -64,7 +63,7 @@ export default function Index() {
             if (result?.error) {
                 alert("An error occurred, please try again");
             } else {
-                setModal(true);
+                setIsModalOpen(true);
             }
 
             setLoading(false);

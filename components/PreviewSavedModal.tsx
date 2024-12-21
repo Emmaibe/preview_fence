@@ -19,7 +19,7 @@ interface OTPModalProps {
     email: string;
 }
 
-export default function OTPModal({ type, email }: OTPModalProps) {
+export default function PreviewSavedModal({ type, email }: OTPModalProps) {
     const { setIsModalOpen } = useModalContext();
     const { onVerifyEmail, onVerify } = useAuthContext();
 
@@ -105,11 +105,11 @@ export default function OTPModal({ type, email }: OTPModalProps) {
                 <View className="absolute w-[324px] flex-row items-center justify-center -top-[18px]">
                     <View className={`h-[36px] flex-row items-center px-2 pr-4 space-x-2 rounded-full bg-primary-pending_bg border z-50
                         ${
-                            loading ? "bg-neutral-200 border-primary-pending" :
-                                !loading && otpStatus === "failed" ? "bg-primary-danger_bg border-primary-danger" :
-                                    !loading && otpStatus === "success" ? "bg-primary-success_bg border-primary-green" :
-                                        "bg-primary-pending_bg"
-                        }
+                        loading ? "bg-neutral-200 border-primary-pending" :
+                            !loading && otpStatus === "failed" ? "bg-primary-danger_bg border-primary-danger" :
+                                !loading && otpStatus === "success" ? "bg-primary-success_bg border-primary-green" :
+                                    "bg-primary-pending_bg"
+                    }
                     `}>
                         <View className="">
                             {
@@ -125,19 +125,19 @@ export default function OTPModal({ type, email }: OTPModalProps) {
 
                         <Text className={`font-intermedium text-primary-pending 
                             ${
-                                loading ? "text-primary-pending" :
-                                    !loading && otpStatus === "failed" ? "text-primary-danger" :
-                                        !loading && otpStatus === "success" ? "text-primary-green" :
-                                            "text-primary-success"
-                            }
+                            loading ? "text-primary-pending" :
+                                !loading && otpStatus === "failed" ? "text-primary-danger" :
+                                    !loading && otpStatus === "success" ? "text-primary-green" :
+                                        "text-primary-success"
+                        }
                         `}>
                             {
                                 loading ?
-                                    "Verifying..." :
+                                    "Saving..." :
                                     !loading && otpStatus === "failed" ?
-                                        "Verification Failed" :
+                                        "Saving Preview Failed" :
                                         !loading && otpStatus === "success" ?
-                                            "Email Verified" :
+                                            "Preview Saved" :
                                             null
                             }
                         </Text>
@@ -146,46 +146,31 @@ export default function OTPModal({ type, email }: OTPModalProps) {
             }
 
             <View className="bg-white w-full h-[285px] rounded-[27px] flex items-center p-1 space-y-5">
-                <View className="w-[42] h-[42] border border-primary-gray rounded-full flex justify-center items-center mt-6">
-                    <Image
-                        source={require("../assets/images/send.png")}
-                        className="w-[19px] h-[20px]"
-                    />
+                <View className="w-[64] h-[64] bg-neutral-800 border-primary-gray rounded-full flex justify-center items-center mt-6">
+                    <Ionicons name="folder-open" size={20} color="white" />
                 </View>
 
-                <Text className="text-[16px] font-intersb">Verification email sent</Text>
+                <Text className="text-[24px] font-interbold">Preview Saved</Text>
 
-                <View className="bg-neutral-300 w-full rounded-[25px] flex-1 p-3 justify-between">
+                <View className="bg-neutral-300 w-full rounded-[25px] flex-1 p-3 justify-between space-y-1.5">
                     <Text className="font-intermedium text-[16px] text-center text-primary-gray-light">
-                        Enter the five (5) digit OTP that has been sent to fran***@xyz.com to complete log in
+                        Your preview has been saved you can come back to make changes later
                     </Text>
 
-                    <View className="flex flex-row justify-between">
-                        {inputRefs.map((ref, index) => (
-                            <TextInput
-                                key={index}
-                                ref={ref}
-                                className="w-[50px] h-[74px] bg-white rounded-[25px] text-center text-[16px] font-interbold"
-                                keyboardType="numeric"
-                                maxLength={1}
-                                onChangeText={(text) => handleTextChange(text, index)}
-                                onKeyPress={(e) => handleKeyPress(e, index)}
-                                value={otpValues[index]}
-                            />
-                        ))}
-                    </View>
+                    <TouchableOpacity
+                        onPress={() => router.replace("/home")}
+                        className="border border-primary-gray-light p-[1px] rounded-full"
+                    >
+                        <View className="bg-neutral-800 h-[42px] rounded-full flex-row items-center justify-center">
+                            <Text className="text-white text-center text-[16px] font-intermedium">
+                                Back to home
+                            </Text>
+                        </View>
+                    </TouchableOpacity>
+
+                    <Text className="text-sm font-intermedium text-center">See all previews</Text>
                 </View>
             </View>
-
-            <TouchableOpacity
-                onPress={() => handleConfirmOTP()}
-                disabled={loading || !isFormValidated}
-                className={`border ${!isFormValidated || loading ? "border-neutral-100" : "border-primary-gray-light"} p-[1px] rounded-[17px] relative top-5`}
-            >
-                <View className={`p-[14px] rounded-[16px] ${!isFormValidated || loading ? "bg-primary-gray-light" : "bg-neutral-800"}`}>
-                    <Text className="text-white text-center text-[16px] font-intermedium">Confirm OTP</Text>
-                </View>
-            </TouchableOpacity>
         </View>
     );
 }

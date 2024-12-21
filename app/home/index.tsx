@@ -1,10 +1,19 @@
 import {ScrollView, View, Text, Image, TextInput, TouchableOpacity, FlatList} from "react-native";
 import {SafeAreaView} from "react-native-safe-area-context";
-import {useState} from "react";
-import {AntDesign, Entypo} from "@expo/vector-icons";
+import {useEffect, useState} from "react";
+import {Entypo} from "@expo/vector-icons";
 import {router} from "expo-router";
+import Search from "@/components/Search";
+import {useFenceDataContext} from "@/contexts/FenceDataContext";
+import {FenceData} from "@/utils/Types";
 
 const Index = () => {
+    const { fenceData, fetchFenceData, fenceLoading, setSelectedFence } = useFenceDataContext();
+
+    useEffect(() => {
+        fetchFenceData();
+    }, []);
+
     const [search, setSearch] = useState("");
     const [selectedCategory, setSelectedCategory] = useState("All category");
 
@@ -12,29 +21,26 @@ const Index = () => {
         setSelectedCategory(name);
     }
 
+    const handleSelectFence = (fence: FenceData) => {
+        setSelectedFence(fence);
+        router.push("/home/fenceUnit");
+    }
+
     return (
-        <SafeAreaView className="p-4">
-            <ScrollView>
-                <View className="flex-row justify-between items-center px-2">
+        <SafeAreaView className="p-4 dark:border-gray-400 flex-1">
+            {/*<View className="flex-1">*/}
+                <View className="flex-row justify-between items-center px-2 mb-8">
                     <Text className="font-interextrabold text-[20px]">ThePreviewfence</Text>
                     <TouchableOpacity onPress={() => router.push("/settings")}>
                         <Image source={require("../../assets/icons/setting.png")} />
                     </TouchableOpacity>
                 </View>
 
-                <View className="mt-8 relative">
-                    <View className="absolute top-4 left-3">
-                        <AntDesign name="search1" size={24} color={"#000"} />
-                    </View>
-
-                    <TextInput
-                        className="font-intermedium text-primary-text p-5 pl-11 rounded-[12px] w-full border border-primary-gray-light"
-                        value={search}
-                        onChangeText={(value) => setSearch(value)}
-                        placeholder="Find dimensiona, Materials, etc"
-                        placeholderTextColor={"#CECFCF"}
-                    />
-                </View>
+                <Search
+                    placeholder="Find dimensiona, Materials, etc"
+                    search={search}
+                    setSearch={setSearch}
+                />
 
                 <FlatList
                     data={cat}
@@ -45,7 +51,31 @@ const Index = () => {
                         <Category key={index} category={item} isSelected={item.name === selectedCategory} setCategory={setCategory} />
                     )}
                 />
-            </ScrollView>
+
+                {/*<TouchableOpacity*/}
+                {/*    onPress={() => router.push("/home/fenceUnit")}*/}
+                {/*    className="p-4 rounded-lg bg-primary-green mt-10"*/}
+                {/*>*/}
+                {/*    <Text className="text-primary-text text-center font-intersb">Fence Unit</Text>*/}
+                {/*</TouchableOpacity>*/}
+                {/*<TouchableOpacity*/}
+                {/*    onPress={() => router.push("/home/savedPreviews")}*/}
+                {/*    className="p-4 rounded-lg bg-primary-green mt-10"*/}
+                {/*>*/}
+                {/*    <Text className="text-primary-text text-center font-intersb">Saved Previews</Text>*/}
+                {/*</TouchableOpacity>*/}
+                <FlatList
+                    data={!fenceLoading ? fenceData : []}
+                    className="my-4 rounded-[12px]"
+                    showsVerticalScrollIndicator={false}
+                    renderItem={({ item, index }) => (
+                        <TouchableOpacity onPress={() => handleSelectFence(item)} key={index} className="my-2 w-full">
+                            <Image source={{ uri: item.imageUrls[0]}} className="w-full h-[200px] rounded-[12px]"/>
+                            <Text className="mt-1 text-base font-intersb"><Text>Name: </Text> {item.name}</Text>
+                            <Text className="text-sm font-intermedium"><Text>Description: </Text> {item.description}</Text>
+                        </TouchableOpacity>
+                    )}
+                />
         </SafeAreaView>
     )
 }

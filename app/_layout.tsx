@@ -4,6 +4,7 @@ import {useFonts} from "expo-font";
 import ModalContextProvider from "@/contexts/ModalContext";
 import AuthProvider from "@/contexts/AuthContext";
 import UserContextProvider from "@/contexts/UserContext";
+import FenceDataContextProvider from "@/contexts/FenceDataContext";
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
@@ -33,13 +34,15 @@ export default function RootLayout() {
       <AuthProvider>
           <UserContextProvider>
               <ModalContextProvider>
-                  <Stack
-                      screenOptions={{
-                          headerShown: false,
-                      }}
-                  >
-                      <Stack.Screen name="index" />
-                  </Stack>
+                  <FenceDataContextProvider>
+                      <Stack
+                          screenOptions={{
+                              headerShown: false,
+                          }}
+                      >
+                          <Stack.Screen name="index" />
+                      </Stack>
+                  </FenceDataContextProvider>
               </ModalContextProvider>
           </UserContextProvider>
       </AuthProvider>

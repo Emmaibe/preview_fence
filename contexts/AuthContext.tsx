@@ -1,6 +1,7 @@
 import React, {createContext, useContext, useEffect, useState} from "react";
 import {axiosInstance} from "@/api/AxiosInstance";
 import {deleteFromSecureStorage, getFromSecureStorage, saveToSecureStorage} from "@/api/SecureStorage";
+import {UserType} from "@/utils/Types";
 
 
 interface AuthProps {

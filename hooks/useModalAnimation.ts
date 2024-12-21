@@ -3,7 +3,7 @@ import { Animated } from "react-native";
 import { useModalContext } from "@/contexts/ModalContext";
 
 export const useModalAnimation = () => {
-    const { modal } = useModalContext();
+    const { isModalOpen } = useModalContext();
 
     const [isVisible, setIsVisible] = useState(false);
     const translateYAnim = useRef(new Animated.Value(1000)).current;
@@ -13,7 +13,7 @@ export const useModalAnimation = () => {
 
         Animated.timing(translateYAnim, {
             toValue: 0,
-            duration: 500,
+            duration: 300,
             useNativeDriver: true,
         }).start();
     };
@@ -21,18 +21,18 @@ export const useModalAnimation = () => {
     const slideOut = () => {
         Animated.timing(translateYAnim, {
             toValue: 1000,
-            duration: 1000,
+            duration: 300,
             useNativeDriver: true,
         }).start(() => setIsVisible(false));
     };
 
     useEffect(() => {
-        if (modal) {
+        if (isModalOpen) {
             slideIn();
         } else {
             slideOut();
         }
-    }, [modal]);
+    }, [isModalOpen]);
 
     return { isVisible, translateYAnim };
 };

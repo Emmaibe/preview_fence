@@ -1,4 +1,5 @@
 import React, {createContext} from "react";
+import {UserType} from "@/utils/Types";
 
 interface UserContextType {
     user: UserType;

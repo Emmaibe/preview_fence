@@ -16,7 +16,7 @@ const Help = () => {
     return (
         <SafeAreaView className="p-4">
             <TouchableOpacity onPress={() => router.back()} className="flex flex-row items-center space-x-2">
-                <Image source={require("../../assets/icons/back.png")} />
+                <Image source={require("../../assets/icons/back.png")} className="w-[16px] h-[12px]" />
                 <Text className="font-intersb text-[20px]">Settings</Text>
             </TouchableOpacity>
 
