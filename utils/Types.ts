@@ -35,8 +35,7 @@ export interface FenceMetricProps {
 }
 
 export interface FenceDetailsProps {
-    title: string;
-    metrics: FenceMetricProps[];
+    fence: FenceData;
 }
 
 export interface DescriptionCardProps {
@@ -46,7 +45,7 @@ export interface DescriptionCardProps {
 
 export interface SideInfoProps {
     width: string;
-    sectionWidth: string;
+    sectionWidth: string | undefined;
 }
 
 export interface SideProps {
@@ -56,8 +55,8 @@ export interface SideProps {
 
 export interface FenceDimensionProps {
     sides: SideProps[];
-    gate: string;
-    description: string;
+    gate: string | undefined;
+    description: string | undefined;
 }
 
 export interface FenceData {
@@ -91,18 +90,6 @@ export interface PreviewPayload {
     fenceIndex?: number;
     description: string;
     unitWidths?: number[];
-}
-
-const data: PreviewPayload = {
-    pins: [
-        [0,1,3],
-        [0,1,3],
-        [0,1,3],
-        [0,1,3],
-        [0,1,3],
-    ],
-    description: "MR collins house",
-    userId: "kjbcbs",
 }
 
 export interface SavedPreview extends PreviewPayload {

@@ -49,7 +49,7 @@ const Modal: React.FC<MenuModalProps> = ({ setModal }) => {
     };
 
     return (
-        <View className="absolute w-full h-full bg-neutral-200 rounded-tl-2xl rounded-tr-2xl">
+        <View className="absolute w-full bottom-0 h-fit bg-neutral-200 rounded-tl-2xl rounded-tr-2xl">
             <View className="items-end p-[10px]">
                 <TouchableOpacity onPress={() => closeMenu()} className="w-[30px] h-[30px] justify-center items-center rounded-full bg-neutral-800">
                     <FontAwesome6 name="xmark" color="#FFFFFF" size={20} />
@@ -66,24 +66,26 @@ const Modal: React.FC<MenuModalProps> = ({ setModal }) => {
 
                 <Text className="font-intermedium text-base mt-2">Find and add fence to your previews</Text>
 
-                <View className="my-4 rounded-[12px] bg-gray-150">
+                {/* <View className="my-4 rounded-[12px] bg-gray-150">
                     <Search
                         placeholder="Find dimensions, Materials"
                         search={search}
                         setSearch={setSearch}
                         className=""
                     />
-                </View>
+                </View> */}
 
                 <FlatList
                     data={savedFences}
-                    className="my-4 rounded-[12px]"
+                    className="my-4"
+                    horizontal
                     showsVerticalScrollIndicator={false}
+                    showsHorizontalScrollIndicator={false}
                     renderItem={({ item, index }) => (
-                        <TouchableOpacity onPress={() => setSelectedFence(item)} key={item.id} className="my-2 w-full">
-                            <Image source={{ uri: item.imageUrls[0]}} className="w-full h-[160px] rounded-[12px]"/>
-                            <Text className="mt-1 text-base font-intersb"><Text>Name: </Text> {item.name}</Text>
-                            <Text className="text-sm font-intermedium"><Text>Description: </Text> {item.description}</Text>
+                        <TouchableOpacity onPress={() => setSelectedFence(item)} key={item.id} className="mr-2 w-[100px]">
+                            <Image source={{ uri: item.imageUrls[0]}} className="w-full h-[60px] rounded-[5px]"/>
+                            <Text className="mt-1 text-base font-intersb">{item.name}</Text>
+                            {/* <Text className="text-sm font-intermedium"><Text>Description: </Text> {item.description}</Text> */}
                         </TouchableOpacity>
                     )}
                 />

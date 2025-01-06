@@ -8,7 +8,8 @@ import {
     Text,
     TextInput,
     TouchableOpacity, TouchableWithoutFeedback,
-    View
+    View,
+    ScrollView
 } from "react-native";
 import {useEffect, useRef, useState} from "react";
 import {LinearGradient} from "expo-linear-gradient";
@@ -16,6 +17,7 @@ import {useRouter} from "expo-router";
 import {useAuthContext} from "@/contexts/AuthContext";
 import {emailRegex} from "@/utils/Constants";
 import OTPModal from "@/components/OTPModal";
+
 
 export default function Index() {
     const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
@@ -65,6 +67,7 @@ export default function Index() {
 
     const handleLogin = async () => {
         setLoading(true);
+        Keyboard.dismiss();
 
         if (onLogin) {
             const result = await onLogin(email);
@@ -80,10 +83,11 @@ export default function Index() {
     }
 
     return (
-        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+        <TouchableWithoutFeedback onPress={Keyboard.dismiss} className="flex-1 h-full">
             <KeyboardAvoidingView
                 style={{flex: 1}}
-                behavior={Platform.OS === "ios" ? "padding" : "height"}
+                behavior={Platform.OS === "ios" ? "padding" : "padding"}
+                className="flex-1"
             >
                 <ImageBackground
                     source={require("../../assets/images/overlay.png")}
@@ -116,7 +120,8 @@ export default function Index() {
                         translucent={true}
                     />
 
-                    <View className="p-[10px] w-full">
+                    {/* <ScrollView className=""> */}
+                    <View className="p-[10px] flex-1 justify-center w-full">
                         <View className="p-[10px] bg-neutral-200 rounded-[26px]">
                             <View className="relative">
                                 <Image
@@ -215,6 +220,8 @@ export default function Index() {
                             </View>
                         </View>
                     </View>
+                    {/* </ScrollView> */}
+                    
                 </ImageBackground>
             </KeyboardAvoidingView>
         </TouchableWithoutFeedback>

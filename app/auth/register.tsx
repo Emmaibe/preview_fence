@@ -51,7 +51,7 @@ export default function Index() {
         }
     }, [isModalOpen]);
 
-    const {onRegister} = useAuthContext();
+    const {onRegister, onLogin} = useAuthContext();
 
     const [loading, setLoading] = useState(false);
 
@@ -90,7 +90,11 @@ export default function Index() {
             if (result?.error) {
                 alert("An error occurred, please try again");
             } else {
-                setIsModalOpen(true);
+                // setIsModalOpen(true);
+                const res = await onLogin(formState.email.trim());
+                if(res.status == 200){
+                    setIsModalOpen(true);
+                }
             }
 
             setLoading(false);
@@ -124,7 +128,7 @@ export default function Index() {
                             zIndex: 100,
                         }}
                     >
-                        <OTPModal type={"register"} email={formState.email}/>
+                        <OTPModal type={"login"} email={formState.email}/>
                     </Animated.View>
 
                     <StatusBar

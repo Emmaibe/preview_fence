@@ -1,17 +1,35 @@
 import * as React from "react";
-import {FenceDimension} from "@/components/FenceDimension";
+import { FenceDimension } from "@/components/FenceDimension";
+import { FenceData, SavedFence, SavedPreview } from "@/utils/Types";
+import {
+  getDistanceBetween,
+  MToInches,
+} from "@/utils/helperfunctions/fenceUtility";
+import { inchesToFeet } from "@/utils/helperfunctions/HelperFunctions";
 
-const fenceData = {
-    sides: [
-        { sideNumber: 1, sideInfo: { width: "12ft", sectionWidth: "12ft" } },
-        { sideNumber: 2, sideInfo: { width: "12ft", sectionWidth: "12ft" } },
-        { sideNumber: 3, sideInfo: { width: "12ft", sectionWidth: "12ft" } },
-        { sideNumber: 4, sideInfo: { width: "12ft", sectionWidth: "12ft" } },
-    ],
-    gate: "Cross pattern close gate",
-    description: "Description says this fence is of a certain dimension is of a particular set, etc",
-};
-
-export const FenceDimensionDetailsContainer: React.FC = () => {
-    return <FenceDimension {...fenceData} />;
+export const FenceDimensionDetailsContainer: React.FC<{
+  preview: SavedPreview;
+  fence?: FenceData | SavedFence | null;
+}> = ({ preview, fence }) => {
+  const fenceData = {
+    sides: (preview.unitWidths as number[]).map((unitWidth, index) => {
+      return {
+        sideNumber: index + 1,
+        sideInfo: {
+          width: inchesToFeet(
+            MToInches(
+              getDistanceBetween(
+                preview.pins[index].transform.position,
+                preview.pins[index == preview.pins.length - 1 ? 0 : index + 1].transform.position
+              )
+            )
+          ).toString() + "ft",
+          sectionWidth: unitWidth ? inchesToFeet(unitWidth) + "ft" : undefined,
+        },
+      };
+    }),
+    gate: fence?.name,
+    description: fence?.description,
+  };
+  return <FenceDimension {...fenceData} />;
 };

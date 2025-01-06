@@ -1,10 +1,10 @@
 {
   "expo": {
-    "name": "preview_fence",
+    "name": "Preview Fence",
     "slug": "preview_fence",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/images/icon.png",
+    "icon": "./assets/images/logo.png",
     "scheme": "myapp",
     "userInterfaceStyle": "automatic",
     "splash": {
@@ -14,13 +14,21 @@
     },
     "newArchEnabled": true,
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.yourmercury.preview-fence",
+      "infoPlist": {
+        "NSPhotoLibraryUsageDescription": "$(PRODUCT_NAME) would like to read photos for AR experiences. This is a custom InfoPlist string!",
+        "NSPhotoLibraryAddUsageDescription": "Allow $(PRODUCT_NAME) to save photos",
+        "NSCameraUsageDescription": "$(PRODUCT_NAME) uses your camera for AR experiences. This is a custom InfoPlist string!",
+        "NSMicrophoneUsageDescription": "$(PRODUCT_NAME) uses your microphone for AR experiences. This is a custom InfoPlist string!"
+      }
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "com.yourmercury.preview_fence"
     },
     "web": {
       "bundler": "metro",
@@ -29,10 +37,30 @@
     },
     "plugins": [
       "expo-router",
-      "expo-secure-store"
+      "expo-secure-store",
+      [
+        "@reactvision/react-viro",
+        {
+          "ios": {
+            "cameraUsagePermission": "$(PRODUCT_NAME) uses your camera for AR experiences. This is a custom InfoPlist string!",
+            "microphoneUsagePermission": "$(PRODUCT_NAME) uses your microphone for AR experiences. This is a custom InfoPlist string!",
+            "photosPermission": "$(PRODUCT_NAME) would like to read photos for AR experiences. This is a custom InfoPlist string!",
+            "savephotosPermission": "$(PRODUCT_NAME) would like to save photos to your library during AR experiences. This is a custom InfoPlist string!"
+          }
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": true
-    }
+    },
+    "extra": {
+      "router": {
+        "origin": false
+      },
+      "eas": {
+        "projectId": "347a8935-00ff-4ffe-8d81-44896aec19de"
+      }
+    },
+    "owner": "yourmercury"
   }
 }

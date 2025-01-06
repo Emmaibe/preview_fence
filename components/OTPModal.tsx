@@ -28,6 +28,8 @@ export default function OTPModal({ type, email }: OTPModalProps) {
     const [otpStatus, setOtpStatus] = useState<string>("none");
     const [verifyModal, setVerifyModal] = useState<boolean>(false);
 
+    const [isLoggedIn, setIsLoggedIn] = useState(false);
+
     // Create references for each TextInput
     const inputRefs = [useRef<TextInput>(null), useRef<TextInput>(null), useRef<TextInput>(null), useRef<TextInput>(null), useRef<TextInput>(null)];
     const [otpValues, setOtpValues] = useState<string[]>(["", "", "", "", ""]);
@@ -88,6 +90,7 @@ export default function OTPModal({ type, email }: OTPModalProps) {
                 setOtpStatus("failed");
             } else {
                 setOtpStatus("success");
+                setIsLoggedIn(true);
                 setTimeout(() => {
                     setIsModalOpen(false);
                     router.replace("/home");
@@ -176,16 +179,18 @@ export default function OTPModal({ type, email }: OTPModalProps) {
                     </View>
                 </View>
             </View>
-
-            <TouchableOpacity
-                onPress={() => handleConfirmOTP()}
-                disabled={loading || !isFormValidated}
-                className={`border ${!isFormValidated || loading ? "border-neutral-100" : "border-primary-gray-light"} p-[1px] rounded-[17px] relative top-5`}
-            >
-                <View className={`p-[14px] rounded-[16px] ${!isFormValidated || loading ? "bg-primary-gray-light" : "bg-neutral-800"}`}>
-                    <Text className="text-white text-center text-[16px] font-intermedium">Confirm OTP</Text>
-                </View>
-            </TouchableOpacity>
+            {
+                !isLoggedIn && 
+                <TouchableOpacity
+                    onPress={() => handleConfirmOTP()}
+                    disabled={loading || !isFormValidated}
+                    className={`border ${!isFormValidated || loading ? "border-neutral-100" : "border-primary-gray-light"} p-[1px] rounded-[17px] relative top-5`}
+                >
+                    <View className={`p-[14px] rounded-[16px] ${!isFormValidated || loading ? "bg-primary-gray-light" : "bg-neutral-800"}`}>
+                        <Text className="text-white text-center text-[16px] font-intermedium">Confirm OTP</Text>
+                    </View>
+                </TouchableOpacity>
+            }
         </View>
     );
 }

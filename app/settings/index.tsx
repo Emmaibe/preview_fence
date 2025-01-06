@@ -4,6 +4,8 @@ import React from "react";
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import {Href, useRouter} from "expo-router";
 import {useAuthContext} from "@/contexts/AuthContext";
+import RNRestart from "react-native-restart";
+
 
 const Index = () => {
     const router = useRouter();
@@ -14,7 +16,7 @@ const Index = () => {
         if (onLogout) {
             await onLogout();
         }
-        router.replace("/auth/login");
+        RNRestart.Restart();
     }
 
     return (

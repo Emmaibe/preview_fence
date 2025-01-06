@@ -1,18 +1,11 @@
 import * as React from "react";
 import { View } from "react-native";
 import {FenceDetails} from "@/components/FenceDetails";
+import { FenceData, SavedPreview } from "@/utils/Types";
 
-export const FenceDetailContainer: React.FC = () => {
-    const fenceData = {
-        title: "Cross pattern fence",
-        metrics: [
-            { label: "Fence height", value: "12ft" },
-            { label: "Min section value", value: "12ft" },
-            { label: "Max section value", value: "12ft" },
-        ],
-    };
+export const FenceDetailContainer: React.FC<{fenceObject: FenceData}> = ({fenceObject}) => {
 
     return (
-        <FenceDetails title={fenceData.title} metrics={fenceData.metrics} />
+        <FenceDetails fence={fenceObject} />
     );
 };
